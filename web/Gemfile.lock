@@ -104,6 +104,7 @@ GEM
     eventmachine (1.2.7)
     faker (3.5.2)
       i18n (>= 1.8.11, < 2)
+    ffi (1.17.2)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm-linux-gnu)
@@ -139,6 +140,9 @@ GEM
     http_parser.rb (0.8.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     io-console (0.8.1)
     irb (1.15.3)
       pp (>= 0.6.0)
@@ -188,7 +192,10 @@ GEM
       net-smtp
     marcel (1.1.0)
     mercenary (0.4.0)
+    mini_magick (5.3.1)
+      logger
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (5.26.2)
     net-imap (0.5.12)
       date
@@ -200,6 +207,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
+    nokogiri (1.18.10)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
     nokogiri (1.18.10-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.10-aarch64-linux-musl)
@@ -291,6 +301,9 @@ GEM
       io-console (~> 0.5)
     rexml (3.4.4)
     rouge (4.6.1)
+    ruby-vips (2.3.0)
+      ffi (~> 1.12)
+      logger
     rubytest (0.8.1)
     safe_yaml (1.0.5)
     sass-embedded (1.94.2-aarch64-linux-gnu)
@@ -347,6 +360,7 @@ DEPENDENCIES
   debug
   dotenv-rails
   faker (~> 3.5)
+  image_processing (~> 1.2)
   jekyll (> 1.0)
   pg (~> 1.1)
   propshaft
