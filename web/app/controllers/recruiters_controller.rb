@@ -58,7 +58,7 @@ class RecruitersController < ApplicationController
   end
 
   def show
-    @recruiter = Recruiter.find_by!(public_slug: params[:slug])
+    @recruiter = Recruiter.includes(:company).find_by!(public_slug: params[:slug])
 
     @reviews = @recruiter.reviews.where(status: "approved").order(created_at: :desc).limit(25)
 
