@@ -9,6 +9,7 @@ class RecruitersController < ApplicationController
     scope = Recruiter
       .joins("INNER JOIN (#{aggregates.to_sql}) agg ON agg.recruiter_id = recruiters.id")
       .left_joins(:company)
+      .preload(:company)
       .where("agg.reviews_count >= ?", threshold)
 
     # Filters
