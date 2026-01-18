@@ -3,6 +3,7 @@ require 'uri'
 
 class LinkedInFetcher
   DEFAULT_TIMEOUT = 5
+  MAX_BODY_SIZE = 2 * 1024 * 1024 # 2 MB Limit
 
   def fetch(url)
     uri = URI.parse(url)
@@ -17,10 +18,35 @@ class LinkedInFetcher
     req = Net::HTTP::Get.new(uri.request_uri)
     req['User-Agent'] = ENV['LINKEDIN_FETCH_UA'].presence || 'RecruiterRankingsBot/0.1'
 
-    res = http.request(req)
-    return res.body if res.is_a?(Net::HTTPSuccess)
+    # Range header to be polite, though server might ignore it
+    req['Range'] = "bytes=0-#{MAX_BODY_SIZE}"
 
-    nil
+    # Use block form of request to stream response and limit size
+    body = String.new
+    begin
+      http.request(req) do |response|
+        return nil unless response.is_a?(Net::HTTPSuccess) || response.is_a?(Net::HTTPPartialContent)
+
+        response.read_body do |chunk|
+          body << chunk
+          if body.bytesize > MAX_BODY_SIZE
+             # Stop reading if we exceed the limit
+             # We can't easily abort the connection cleanly without raising,
+             # but returning what we have is usually enough.
+             # However, read_body continues until EOF unless we break out.
+             # Net::HTTP doesn't support breaking out of read_body easily without closing socket.
+             http.finish if http.started?
+             break
+          end
+        end
+      end
+    rescue IOError, EOFError, Errno::ECONNRESET
+      # Connection closed, which is expected if we force finish
+    rescue => _e
+      return nil
+    end
+
+    body
   rescue => _e
     nil
   end
