@@ -48,6 +48,8 @@ en:
       per_page: "Per page"
       filter: "Filter"
       clear: "Clear"
+      no_results: "No recruiters found matching your search."
+      clear_filters: "Clear filters"
       th:
         recruiter: "Recruiter"
         company: "Company"
