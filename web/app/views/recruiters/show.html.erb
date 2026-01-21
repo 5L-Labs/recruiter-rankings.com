@@ -27,10 +27,10 @@
     <article style="border:1px solid var(--border); padding:10px; margin-bottom:10px; background: var(--surface);">
       <p><strong>Overall:</strong> <%= rev.overall_score %> — <em><%= rev.created_at.strftime("%Y-%m-%d") %></em></p>
       <p class="review-text"><%= simple_format rev.text %></p>
-      <% if rev.review_responses.visible.exists? %>
+      <% if rev.visible_review_responses.any? %>
         <div style="margin-top:8px; padding:8px; border-left:3px solid var(--accent); background: transparent;">
           <p style="margin:0 0 4px 0; color: var(--muted);"><strong>Right-of-reply</strong></p>
-          <% rev.review_responses.visible.each do |resp| %>
+          <% rev.visible_review_responses.each do |resp| %>
             <p style="margin:0 0 8px 0;">
               <%= simple_format resp.body %>
               <small style="color: var(--muted);">— posted <%= time_ago_in_words(resp.created_at) %> ago</small>
