@@ -61,7 +61,7 @@ class RecruitersController < ApplicationController
   def show
     @recruiter = Recruiter.includes(:company).find_by!(public_slug: params[:slug])
 
-    @reviews = @recruiter.reviews.where(status: "approved").order(created_at: :desc).limit(25)
+    @reviews = @recruiter.reviews.includes(:visible_review_responses).where(status: "approved").order(created_at: :desc).limit(25)
 
     # Overall aggregates
     overall = @recruiter.reviews.where(status: "approved")
