@@ -29,6 +29,7 @@
 
 en:
   nav:
+    skip_to_content: "Skip to content"
     home: "Home"
     about: "About"
     policies: "Policies"
