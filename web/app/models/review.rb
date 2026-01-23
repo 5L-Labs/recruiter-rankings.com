@@ -4,6 +4,7 @@ class Review < ApplicationRecord
   belongs_to :company, optional: true
   has_many :review_metrics, dependent: :destroy
   has_many :review_responses, dependent: :destroy
+  has_many :visible_review_responses, -> { visible }, class_name: "ReviewResponse"
 
   enum :status, {
     pending: "pending",
