@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_07_043000) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_07_050000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_07_043000) do
     t.datetime "verified_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "last_verification_error"
     t.index ["expires_at"], name: "index_identity_challenges_on_expires_at"
     t.index ["subject_type", "subject_id"], name: "index_identity_challenges_on_subject_type_and_subject_id"
     t.index ["token_hash"], name: "index_identity_challenges_on_token_hash", unique: true
