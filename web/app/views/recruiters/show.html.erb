@@ -25,7 +25,7 @@
       new_recruiter_review_path(@recruiter.public_slug, recruiter_slug: @recruiter.public_slug),
       class: "cta",
       style: "margin-top: 0;",
-      aria: { label: t('recruiters.show.write_review_aria', name: @recruiter.name, default: "Write a review for #{@recruiter.name}") }
+      aria: { label: t('reviews.new.title_for', name: @recruiter.name) }
   %>
 
   <%= link_to t('recruiters.show.claim_profile'),
