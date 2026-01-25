@@ -2,6 +2,8 @@ require "test_helper"
 require "minitest/mock"
 
 class RegistrationFlowsTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
+
   setup do
     @company = Company.create!(name: "Cyberdyne Systems", region: "US")
     @recruiter = Recruiter.create!(name: "Miles Dyson", company: @company, public_slug: "miles-dyson")
@@ -33,16 +35,18 @@ class RegistrationFlowsTest < ActionDispatch::IntegrationTest
     mock_fetcher = Minitest::Mock.new
     mock_fetcher.expect(:fetch, "<html><body>Profile content with #{token}</body></html>", [String])
     
-    # Inject the mock into the controller
-    ClaimIdentityController.any_instance.stub(:linkedin_fetcher, mock_fetcher) do
-      post "/claim_identity/verify", params: {
-        challenge_id: challenge.id,
-        linkedin_url: "https://linkedin.com/in/miles"
-      }
+    # Mock LinkedInFetcher.new to return our mock fetcher
+    LinkedInFetcher.stub(:new, mock_fetcher) do
+      perform_enqueued_jobs do
+        post "/claim_identity/verify", params: {
+          challenge_id: challenge.id,
+          linkedin_url: "https://linkedin.com/in/miles"
+        }
+      end
 
       assert_redirected_to recruiter_path("miles-dyson")
       follow_redirect!
-      assert_select ".alert-info", "Recruiter verified."
+      assert_select ".alert-info", "Verification is running in the background. Please check back in a moment."
       
       assert @recruiter.reload.verified_at.present?
     end
