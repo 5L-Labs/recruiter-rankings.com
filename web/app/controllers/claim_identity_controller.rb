@@ -74,25 +74,15 @@ class ClaimIdentityController < ApplicationController
 
     token = "RR-VERIFY-#{challenge.token_hash}"
 
-    body = linkedin_fetcher.fetch(linkedin_url)
-    unless body&.include?(token)
-      flash[:alert] = 'Token not found on the page. Make sure it is visible and saved.'
-      redirect_to new_claim_identity_path(subject_type: map_subject_param(challenge), recruiter_slug: recruiter_slug_for(challenge), linkedin_url: linkedin_url) and return
-    end
+    VerifyIdentityJob.perform_later(challenge.id, linkedin_url)
 
-    challenge.update!(verified_at: Time.current)
+    flash[:notice] = 'Verification is running in the background. Please check back in a moment.'
 
     case challenge.subject_type
     when 'Recruiter'
       recruiter = Recruiter.find(challenge.subject_id)
-      recruiter.update!(verified_at: Time.current)
-      flash[:notice] = 'Recruiter verified.'
       redirect_to recruiter_path(recruiter.public_slug)
-    when 'User'
-      flash[:notice] = 'User identity verified.'
-      redirect_to root_path
     else
-      flash[:notice] = 'Verified.'
       redirect_to root_path
     end
   end
