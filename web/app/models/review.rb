@@ -15,5 +15,6 @@ class Review < ApplicationRecord
 
   validates :overall_score, inclusion: { in: 1..5 }
   validates :status, inclusion: { in: statuses.keys }
+  validates :text, length: { maximum: 5000 }
 end
 
