@@ -33,8 +33,8 @@ class RegistrationFlowsTest < ActionDispatch::IntegrationTest
     mock_fetcher = Minitest::Mock.new
     mock_fetcher.expect(:fetch, "<html><body>Profile content with #{token}</body></html>", [String])
     
-    # Stub :new on the LinkedInFetcher service to return our mock
-    LinkedInFetcher.stub :new, mock_fetcher do
+    # Inject the mock into the controller
+    LinkedInFetcher.stub(:new, mock_fetcher) do
       post "/claim_identity/verify", params: {
         challenge_id: challenge.id,
         linkedin_url: "https://linkedin.com/in/miles"

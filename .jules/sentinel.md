@@ -3,7 +3,6 @@
 **Learning:** Duplicate classes/files with similar names (likely typos or refactoring leftovers) can hide vulnerabilities. One secure implementation was ignored in favor of an insecure one.
 **Prevention:** Remove unused code and audit similar filenames. Use strict linting to catch class/filename mismatches.
 
-<<<<<<< HEAD
 ## 2025-11-21 - Memory Discrepancy on Input Validation
 **Vulnerability:** The Review model was documented in memory as having a 5000 character limit on `text`, but the codebase lacked this validation.
 **Learning:** Security documentation or assumptions can drift from the actual code state. Always verify security controls in the source.
@@ -17,12 +16,6 @@
 **Vulnerability:** `ClaimIdentityController#verify` accepted the `linkedin_url` as a user parameter. An attacker could initiate a claim for a victim, place the verification token on their own profile, and verify the claim by supplying their own profile URL to the verification endpoint. This allowed taking over any recruiter account.
 **Learning:** Never trust client input for verification parameters that determine the identity source. The source of truth (the URL to check) must be stored securely server-side at the time of initiation (create) and retrieved from the database during verification.
 **Prevention:** Store all verification context (URLs, tokens, targets) in the database record (e.g., `IdentityChallenge`) and ignore user parameters that duplicate this state during the verification step.
-
-## 2025-01-21 - Missing Global CSRF Protection
-**Vulnerability:** `ApplicationController` did not have `protect_from_forgery`, leaving controllers inheriting from it (like `Admin::ResponsesController`) vulnerable to CSRF unless they explicitly opted in.
-**Learning:** Even if critical controllers protect themselves, gaps in base classes create "secure by default" failures. New controllers added by developers assuming global protection would be vulnerable.
-**Prevention:** Always enforce `protect_from_forgery` in `ApplicationController` or `ActionController::Base` configuration.
-=======
 ## 2025-11-21 - Memory Discrepancy on Input Validation
 **Vulnerability:** The Review model was documented in memory as having a 5000 character limit on `text`, but the codebase lacked this validation.
 **Learning:** Security documentation or assumptions can drift from the actual code state. Always verify security controls in the source.
@@ -36,4 +29,3 @@
 **Vulnerability:** `ClaimIdentityController#verify` accepted the `linkedin_url` as a user parameter. An attacker could initiate a claim for a victim, place the verification token on their own profile, and verify the claim by supplying their own profile URL to the verification endpoint. This allowed taking over any recruiter account.
 **Learning:** Never trust client input for verification parameters that determine the identity source. The source of truth (the URL to check) must be stored securely server-side at the time of initiation (create) and retrieved from the database during verification.
 **Prevention:** Store all verification context (URLs, tokens, targets) in the database record (e.g., `IdentityChallenge`) and ignore user parameters that duplicate this state during the verification step.
->>>>>>> origin/main
