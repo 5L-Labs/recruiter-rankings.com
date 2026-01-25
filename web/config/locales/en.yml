@@ -62,6 +62,10 @@ en:
       write_review: "Write a review"
       claim_profile: "Claim this profile"
       right_of_reply: "Right-of-reply"
+  companies:
+    index:
+      no_results: "No companies found matching your search."
+      clear_filters: "Clear filters"
   reviews:
     new:
       title_for: "Write a review for %{name}"

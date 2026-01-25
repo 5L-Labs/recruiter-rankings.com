@@ -13,3 +13,7 @@
 ## 2024-05-23 - Basics in POCs
 **Learning:** Even "minimal" POCs often miss fundamental accessibility structures like `<html lang>` and skip links, which are trivial to add but critical for compliance.
 **Action:** Always check `layouts/application.html.erb` for these two specific items immediately upon entering a new Rails project.
+
+## 2025-01-25 - Empty State Pattern & Card Usage
+**Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
+**Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.

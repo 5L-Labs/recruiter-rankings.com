@@ -33,7 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_074150) do
     t.string "token"
     t.string "token_hash", null: false
     t.datetime "updated_at", null: false
-    t.datetime "verified_at"
+    t.text "last_verification_error"
     t.index ["expires_at"], name: "index_identity_challenges_on_expires_at"
     t.index ["subject_type", "subject_id"], name: "index_identity_challenges_on_subject_type_and_subject_id"
     t.index ["token_hash"], name: "index_identity_challenges_on_token_hash", unique: true
