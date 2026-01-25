@@ -49,8 +49,5 @@ module Admin
           ActiveSupport::SecurityUtils.secure_compare(p, expected_pass)
       end
     end
-
-    # CSRF: our forms include tokens; for API-style PATCH via curl, you can disable below (kept enabled for demo UI)
-    protect_from_forgery with: :exception
   end
 end

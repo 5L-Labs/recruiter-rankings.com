@@ -1,8 +1,6 @@
 class ClaimIdentityController < ApplicationController
   require 'digest'
 
-  protect_from_forgery with: :exception
-
   attr_writer :linkedin_fetcher
 
   def linkedin_fetcher
