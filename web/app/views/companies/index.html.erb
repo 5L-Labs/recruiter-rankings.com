@@ -22,34 +22,41 @@
   </div>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th><%= t('recruiters.index.th.company') %></th>
-      <th><%= t('recruiters.index.th.avg_overall') %></th>
-      <th><%= t('recruiters.index.th.reviews') %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @companies.each do |c| %>
+<% if @companies.any? %>
+  <table>
+    <thead>
       <tr>
-        <td><%= link_to c.name, company_path(c) %></td>
-        <td><%= c.attributes['avg_overall']&.to_f&.round(2) || '—' %></td>
-        <td><%= c.attributes['reviews_count'] || 0 %></td>
+        <th><%= t('recruiters.index.th.company') %></th>
+        <th><%= t('recruiters.index.th.avg_overall') %></th>
+        <th><%= t('recruiters.index.th.reviews') %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @companies.each do |c| %>
+        <tr class="company-row">
+          <td><%= link_to c.name, company_path(c) %></td>
+          <td><%= c.attributes['avg_overall']&.to_f&.round(2) || '—' %></td>
+          <td><%= c.attributes['reviews_count'] || 0 %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<div style="margin-top: 16px; display:flex; justify-content: space-between;">
-  <div>
-    <% if @page > 1 %>
-      <%= link_to "← Previous", companies_path(request.query_parameters.merge(page: @page - 1)), class: "cta" %>
-    <% end %>
+  <div style="margin-top: 16px; display:flex; justify-content: space-between;">
+    <div>
+      <% if @page > 1 %>
+        <%= link_to "← Previous", companies_path(request.query_parameters.merge(page: @page - 1)), class: "cta" %>
+      <% end %>
+    </div>
+    <div>
+      <% if @has_next %>
+        <%= link_to "Next →", companies_path(request.query_parameters.merge(page: @page + 1)), class: "cta" %>
+      <% end %>
+    </div>
   </div>
-  <div>
-    <% if @has_next %>
-      <%= link_to "Next →", companies_path(request.query_parameters.merge(page: @page + 1)), class: "cta" %>
-    <% end %>
+<% else %>
+  <div class="card" style="padding: 32px; text-align: center; margin-top: 16px;">
+    <p class="muted" style="margin-bottom: 16px;"><%= t('companies.index.no_results') %></p>
+    <%= link_to t('companies.index.clear_filters'), companies_path, class: "cta" %>
   </div>
-</div>
+<% end %>
