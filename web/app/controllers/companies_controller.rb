@@ -18,7 +18,7 @@ class CompaniesController < ApplicationController
       scope = scope.where("companies.region ILIKE ?", "%#{@region}%")
     end
 
-    scope = scope.order("agg.avg_overall DESC NULLS LAST, companies.name ASC")
+    scope = scope.order(Arel.sql("agg.avg_overall DESC NULLS LAST, companies.name ASC"))
 
     # Pagination
     @page = params[:page].to_i; @page = 1 if @page < 1

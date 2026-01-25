@@ -2,8 +2,10 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  protect_from_forgery with: :exception
+
   before_action :set_locale
-  helper_method :public_min_reviews, :demo_auto_approve?, :submission_email_hmac_pepper, :copy_overall_to_dimensions?, :canonical_url, :public_per_page, :public_max_per_page, :switch_locale_to
+  helper_method :public_min_reviews, :demo_auto_approve?, :copy_overall_to_dimensions?, :canonical_url, :public_per_page, :public_max_per_page, :switch_locale_to
 
   private
 

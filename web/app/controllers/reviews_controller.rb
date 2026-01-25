@@ -1,6 +1,4 @@
 class ReviewsController < ApplicationController
-  protect_from_forgery with: :exception
-
   def index
     recruiter = Recruiter.find_by!(public_slug: params[:recruiter_slug] || params[:recruiter_id])
     per = (params[:per].presence || 10).to_i

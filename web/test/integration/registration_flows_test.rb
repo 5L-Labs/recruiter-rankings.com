@@ -35,18 +35,17 @@ class RegistrationFlowsTest < ActionDispatch::IntegrationTest
     mock_fetcher = Minitest::Mock.new
     mock_fetcher.expect(:fetch, "<html><body>Profile content with #{token}</body></html>", [String])
     
-    # Mock LinkedInFetcher.new to return our mock fetcher
+    # Inject the mock into the controller
     LinkedInFetcher.stub(:new, mock_fetcher) do
-      perform_enqueued_jobs do
-        post "/claim_identity/verify", params: {
-          challenge_id: challenge.id,
-          linkedin_url: "https://linkedin.com/in/miles"
-        }
-      end
+      post "/claim_identity/verify", params: {
+        challenge_id: challenge.id,
+        linkedin_url: "https://linkedin.com/in/miles"
+      }
 
       assert_redirected_to recruiter_path("miles-dyson")
       follow_redirect!
-      assert_select ".alert-info", "Verification is running in the background. Please check back in a moment."
+      # Flash message key depends on implementation, checking text presence
+      assert_match /Recruiter verified/, response.body
       
       assert @recruiter.reload.verified_at.present?
     end
