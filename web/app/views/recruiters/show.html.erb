@@ -1,5 +1,10 @@
 <% content_for :title, "#{@recruiter.name} — Recruiter Profile" %>
 <% content_for :meta_description, "Aggregated reviews and metrics for #{@recruiter.name}." %>
+
+<nav aria-label="<%= t('recruiters.show.breadcrumb_aria', default: 'Breadcrumb') %>" style="margin-bottom: 16px;">
+  <%= link_to "← #{t('recruiters.index.title', default: 'Top Recruiters')}", recruiters_path, class: "muted", style: "text-decoration: none; font-size: 0.9em;" %>
+</nav>
+
 <h1><%= @recruiter.name %></h1>
 <p><strong>Company:</strong> <% if @recruiter.company %><%= link_to @recruiter.company.name, company_path(@recruiter.company) %><% else %>—<% end %></p>
 <p><strong>Region:</strong> <%= @recruiter.region || "—" %></p>
@@ -15,11 +20,20 @@
   </ul>
 </section>
 
-<p>
-  <%= link_to t('recruiters.show.write_review'), new_recruiter_review_path(@recruiter.public_slug, recruiter_slug: @recruiter.public_slug) %>
-  &nbsp;|&nbsp;
-  <%= link_to t('recruiters.show.claim_profile'), new_claim_identity_path(subject_type: 'recruiter', recruiter_slug: @recruiter.public_slug), class: "" %>
-</p>
+<div style="display: flex; gap: 16px; align-items: center; margin: 24px 0;">
+  <%= link_to t('recruiters.show.write_review'),
+      new_recruiter_review_path(@recruiter.public_slug, recruiter_slug: @recruiter.public_slug),
+      class: "cta",
+      style: "margin-top: 0;",
+      aria: { label: t('reviews.new.title_for', name: @recruiter.name) }
+  %>
+
+  <%= link_to t('recruiters.show.claim_profile'),
+      new_claim_identity_path(subject_type: 'recruiter', recruiter_slug: @recruiter.public_slug),
+      class: "muted",
+      style: "text-decoration: underline;"
+  %>
+</div>
 
 <section>
   <h2><%= t('recruiters.show.recent_reviews') %></h2>
@@ -42,4 +56,3 @@
     </article>
   <% end %>
 </section>
-
