@@ -85,7 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_074150) do
   create_table "review_metrics", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "dimension", null: false
-    t.bigint "review_id", null: false
+    t.bigint "review_id", null: fals
     t.integer "score", null: false
     t.datetime "updated_at", null: false
     t.index ["dimension"], name: "index_review_metrics_on_dimension"

@@ -2,6 +2,8 @@ require "test_helper"
 require "minitest/mock"
 
 class RegistrationFlowsTest < ActionDispatch::IntegrationTest
+  include ActiveJob::TestHelper
+
   setup do
     @company = Company.create!(name: "Cyberdyne Systems", region: "US")
     @recruiter = Recruiter.create!(name: "Miles Dyson", company: @company, public_slug: "miles-dyson")
