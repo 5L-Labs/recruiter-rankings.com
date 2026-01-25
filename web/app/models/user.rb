@@ -1,15 +1,9 @@
 class User < ApplicationRecord
-  has_many :reviews, dependent: :nullify
-  has_many :moderation_actions, foreign_key: :actor_id, dependent: :nullify
-  has_many :profile_claims, dependent: :destroy
-
-  enum :role, {
-    candidate: "candidate",
-    recruiter: "recruiter",
-    moderator: "moderator",
-    admin: "admin"
-  }, prefix: true
+  has_many :reviews
+  has_many :profile_claims
+  has_many :review_responses
+  has_many :identity_challenges, as: :subject, dependent: :destroy
 
   validates :email_hmac, presence: true, uniqueness: true
+  validates :role, presence: true
 end
-
