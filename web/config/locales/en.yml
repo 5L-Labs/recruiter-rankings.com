@@ -69,6 +69,7 @@ en:
       overall_score_help: "1 = Poor, 5 = Excellent"
       your_experience: "Your experience"
       your_experience_placeholder: "Share details about your interaction, interview process, and feedback..."
+      text_help: "Max 5000 characters. Please do not include PII (names, emails, phone numbers)."
       email_optional: "Email (optional; used for dedupe, not shown)"
       submit: "Submit review"
   admin:
