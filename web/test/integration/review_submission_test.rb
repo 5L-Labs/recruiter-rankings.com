@@ -7,6 +7,21 @@ class ReviewSubmissionTest < ActionDispatch::IntegrationTest
     @recruiter = Recruiter.create!(name: "Nina Sharp", company: @company, public_slug: @slug)
   end
 
+  test "review form has accessibility attributes" do
+    get new_recruiter_review_path(@slug, recruiter_slug: @slug)
+    assert_response :success
+
+    # Check for autofocus on score input
+    assert_select "input[name='review[overall_score]'][autofocus='autofocus']"
+
+    # Check for maxlength and aria-describedby on text area
+    assert_select "textarea[name='review[text]'][maxlength='5000']"
+    assert_select "textarea[name='review[text]'][aria-describedby='text-help']"
+
+    # Check for help text
+    assert_select "#text-help", /Max 5000 characters/
+  end
+
   test "can submit a review" do
     get "/recruiters/#{@slug}"
     assert_response :success

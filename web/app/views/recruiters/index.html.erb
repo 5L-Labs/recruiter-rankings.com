@@ -26,37 +26,44 @@
   </div>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th><%= t('recruiters.index.th.recruiter') %></th>
-      <th><%= t('recruiters.index.th.company') %></th>
-      <th><%= t('recruiters.index.th.avg_overall') %></th>
-      <th><%= t('recruiters.index.th.reviews') %></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @recruiters.each do |r| %>
-      <tr class="recruiter-row">
-        <td><%= link_to r.name, recruiter_path(r.public_slug) %></td>
-        <td><%= r.company&.name || "—" %></td>
-        <td><%= r.attributes["avg_overall"].to_f.round(2) %></td>
-        <td><%= r.attributes["reviews_count"] %></td>
+<% if @recruiters.any? %>
+  <table>
+    <thead>
+      <tr>
+        <th><%= t('recruiters.index.th.recruiter') %></th>
+        <th><%= t('recruiters.index.th.company') %></th>
+        <th><%= t('recruiters.index.th.avg_overall') %></th>
+        <th><%= t('recruiters.index.th.reviews') %></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @recruiters.each do |r| %>
+        <tr class="recruiter-row">
+          <td><%= link_to r.name, recruiter_path(r.public_slug) %></td>
+          <td><%= r.company&.name || "—" %></td>
+          <td><%= r.attributes["avg_overall"].to_f.round(2) %></td>
+          <td><%= r.attributes["reviews_count"] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-<div style="margin-top: 16px; display:flex; justify-content: space-between;">
-  <div>
-    <% if @page > 1 %>
-      <%= link_to "← Previous", recruiters_path(request.query_parameters.merge(page: @page - 1)), class: "cta" %>
-    <% end %>
+  <div style="margin-top: 16px; display:flex; justify-content: space-between;">
+    <div>
+      <% if @page > 1 %>
+        <%= link_to "← Previous", recruiters_path(request.query_parameters.merge(page: @page - 1)), class: "cta" %>
+      <% end %>
+    </div>
+    <div>
+      <% if @has_next %>
+        <%= link_to "Next →", recruiters_path(request.query_parameters.merge(page: @page + 1)), class: "cta" %>
+      <% end %>
+    </div>
   </div>
-  <div>
-    <% if @has_next %>
-      <%= link_to "Next →", recruiters_path(request.query_parameters.merge(page: @page + 1)), class: "cta" %>
-    <% end %>
+<% else %>
+  <div style="padding: 32px; text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-top: 16px;">
+    <p class="muted" style="margin-bottom: 16px;"><%= t('recruiters.index.no_results') %></p>
+    <%= link_to t('recruiters.index.clear_filters'), recruiters_path, class: "cta" %>
   </div>
-</div>
+<% end %>
 

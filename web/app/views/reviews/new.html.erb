@@ -4,13 +4,15 @@
   <%= f.hidden_field :recruiter_slug, value: @recruiter.public_slug %>
 
   <div>
-    <%= f.label :overall_score, t('reviews.new.overall_score') %><br>
-    <%= f.number_field :overall_score, in: 1..5, step: 1, required: true %>
+    <%= f.label :overall_score, t('reviews.new.overall_score') %> <span style="color:#ef4444" aria-hidden="true">*</span><br>
+    <%= f.number_field :overall_score, in: 1..5, step: 1, required: true, autofocus: true, aria: { describedby: 'score-help' } %>
+    <small id="score-help" class="muted" style="display:block; margin-top:4px;"><%= t('reviews.new.overall_score_help') %></small>
   </div>
 
   <div>
-    <%= f.label :text, t('reviews.new.your_experience') %><br>
-    <%= f.text_area :text, rows: 6, required: true %>
+    <%= f.label :text, t('reviews.new.your_experience') %> <span style="color:#ef4444" aria-hidden="true">*</span><br>
+    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help' } %>
+    <small id="text-help" class="muted" style="display:block; margin-top:4px;"><%= t('reviews.new.text_help') %></small>
   </div>
 
   <div>
@@ -19,7 +21,7 @@
   </div>
 
   <div style="margin-top:10px;">
-    <%= f.submit t('reviews.new.submit') %>
+    <%= f.submit t('reviews.new.submit'), class: 'cta' %>
   </div>
 <% end %>
 
