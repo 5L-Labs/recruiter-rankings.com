@@ -1,7 +1,7 @@
 <% content_for :title, "#{@recruiter.name} — Recruiter Profile" %>
 <% content_for :meta_description, "Aggregated reviews and metrics for #{@recruiter.name}." %>
 
-<nav aria-label="Breadcrumb" style="margin-bottom: 16px;">
+<nav aria-label="<%= t('recruiters.show.breadcrumb_aria', default: 'Breadcrumb') %>" style="margin-bottom: 16px;">
   <%= link_to "← #{t('recruiters.index.title', default: 'Top Recruiters')}", recruiters_path, class: "muted", style: "text-decoration: none; font-size: 0.9em;" %>
 </nav>
 
