@@ -34,7 +34,7 @@ class RegistrationFlowsTest < ActionDispatch::IntegrationTest
     mock_fetcher.expect(:fetch, "<html><body>Profile content with #{token}</body></html>", [String])
     
     # Inject the mock into the controller
-    ClaimIdentityController.any_instance.stub(:linkedin_fetcher, mock_fetcher) do
+    LinkedInFetcher.stub(:new, mock_fetcher) do
       post "/claim_identity/verify", params: {
         challenge_id: challenge.id,
         linkedin_url: "https://linkedin.com/in/miles"
