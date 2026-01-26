@@ -29,3 +29,8 @@
 **Vulnerability:** `ClaimIdentityController#verify` accepted the `linkedin_url` as a user parameter. An attacker could initiate a claim for a victim, place the verification token on their own profile, and verify the claim by supplying their own profile URL to the verification endpoint. This allowed taking over any recruiter account.
 **Learning:** Never trust client input for verification parameters that determine the identity source. The source of truth (the URL to check) must be stored securely server-side at the time of initiation (create) and retrieved from the database during verification.
 **Prevention:** Store all verification context (URLs, tokens, targets) in the database record (e.g., `IdentityChallenge`) and ignore user parameters that duplicate this state during the verification step.
+
+## 2026-01-26 - Insecure Default Credentials in Duplicated Code
+**Vulnerability:** Three admin controllers duplicated `require_moderator_auth` logic, all defaulting to "mod"/"mod" credentials if environment variables were missing. This created a risk of accidental exposure in production if configuration was missed, and violated DRY making it hard to secure them all.
+**Learning:** Security logic (authentication/authorization) must be centralized. Duplicated security logic inevitably drifts or relies on unsafe defaults for developer convenience that can leak into production.
+**Prevention:** Centralize admin authentication in a base controller (`Admin::BaseController`) and enforce strict credential requirements in production (fail closed if config is missing), allowing unsafe defaults *only* in development/test environments.
