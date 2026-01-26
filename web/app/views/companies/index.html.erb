@@ -9,15 +9,15 @@
     </div>
     <div>
       <label for="region"><%= t('recruiters.index.region') %></label><br>
-      <input type="text" name="region" id="region" value="<%= h @region %>">
+      <input type="text" name="region" id="region" value="<%= h @region %>" placeholder="<%= t('recruiters.index.region') %>">
     </div>
     <div>
       <label for="per_page"><%= t('recruiters.index.per_page') %></label><br>
       <input type="number" min="1" max="<%= public_max_per_page %>" name="per_page" id="per_page" value="<%= @per_page %>">
     </div>
     <div>
-      <button type="submit"><%= t('recruiters.index.filter') %></button>
-      <%= link_to t('recruiters.index.clear'), companies_path, style: "margin-left:6px;" %>
+      <button type="submit" class="cta" style="margin-top:0"><%= t('recruiters.index.filter') %></button>
+      <%= link_to t('recruiters.index.clear'), companies_path, style: "margin-left:6px;", aria: { label: t('companies.index.clear_filters') } %>
     </div>
   </div>
 <% end %>

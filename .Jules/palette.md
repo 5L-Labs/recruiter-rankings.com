@@ -17,3 +17,11 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2025-05-23 - Context for Clear Actions
+**Learning:** "Clear" links in filter forms are ambiguous to screen reader users ("Clear what?").
+**Action:** Always add `aria-label="Clear filters"` (or similar specific text) to "Clear" or "Reset" actions in filter contexts.
+
+## 2025-05-23 - Button Alignment in Flex Forms
+**Learning:** When using `.cta` classes (which often have top margins for spacing) inside flex-aligned forms, the margins can break alignment.
+**Action:** Explicitly reset margins (e.g., `style="margin-top:0"`) when placing `.cta` buttons in single-line flex containers.
