@@ -9,6 +9,9 @@ ja:
     top_companies: "上位の会社"
     locale_en: "EN"
     locale_ja: "日本語"
+  pagination:
+    previous: "前のページ"
+    next: "次のページ"
   recruiters:
     index:
       title: "上位のリクルーター"
@@ -19,6 +22,7 @@ ja:
       per_page: "件数"
       filter: "絞り込み"
       clear: "クリア"
+      clear_filters: "フィルターをクリア"
       th:
         recruiter: "リクルーター"
         company: "会社"
@@ -31,6 +35,10 @@ ja:
       write_review: "レビューを書く"
       claim_profile: "プロフィールを申請"
       right_of_reply: "回答"
+  companies:
+    index:
+      no_results: "条件に一致する会社は見つかりませんでした。"
+      clear_filters: "フィルターをクリア"
   reviews:
     new:
       title_for: "%{name} へのレビューを書く"
