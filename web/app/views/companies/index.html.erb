@@ -45,18 +45,18 @@
   <div style="margin-top: 16px; display:flex; justify-content: space-between;">
     <div>
       <% if @page > 1 %>
-        <%= link_to "← Previous", companies_path(request.query_parameters.merge(page: @page - 1)), class: "cta" %>
+        <%= link_to "← Previous", companies_path(request.query_parameters.merge(page: @page - 1)), class: "cta", style: "margin-top: 0;", aria: { label: t('pagination.previous') } %>
       <% end %>
     </div>
     <div>
       <% if @has_next %>
-        <%= link_to "Next →", companies_path(request.query_parameters.merge(page: @page + 1)), class: "cta" %>
+        <%= link_to "Next →", companies_path(request.query_parameters.merge(page: @page + 1)), class: "cta", style: "margin-top: 0;", aria: { label: t('pagination.next') } %>
       <% end %>
     </div>
   </div>
 <% else %>
   <div class="card" style="padding: 32px; text-align: center; margin-top: 16px;">
     <p class="muted" style="margin-bottom: 16px;"><%= t('companies.index.no_results') %></p>
-    <%= link_to t('companies.index.clear_filters'), companies_path, class: "cta" %>
+    <%= link_to t('companies.index.clear_filters'), companies_path, class: "cta", style: "margin-top: 0;" %>
   </div>
 <% end %>
