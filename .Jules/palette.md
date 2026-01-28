@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2026-05-24 - CSS Cascade and Skip Links
+**Learning:** Duplicate CSS blocks, even if shadowed, can be confused for regression when removed. Maintaining explicit accessibility features (like skip links) is sensitive.
+**Action:** When cleaning up CSS, verify if duplicates are truly redundant or serving a purpose (e.g., fallbacks). Also, place utility classes at the end of the file to utilize cascade instead of `!important`.
