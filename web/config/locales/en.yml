@@ -38,6 +38,9 @@ en:
     top_companies: "Top companies"
     locale_en: "EN"
     locale_ja: "日本語"
+  pagination:
+    previous: "Previous page"
+    next: "Next page"
   recruiters:
     index:
       title: "Top Recruiters"
