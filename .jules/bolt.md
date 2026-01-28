@@ -8,3 +8,6 @@
 ## 2026-01-26 - Admin Review N+1
 **Learning:** The admin review list iterates over `review.review_responses` for each review, causing N+1 queries if not eager loaded.
 **Action:** Always verify associated data usage in views (especially admin dashboards) and add `.includes(:association)` to the controller query.
+## 2026-01-23 - Index Only Scan for Aggregation
+**Learning:** For aggregation queries like `Review.where(status: "approved").group(:recruiter_id).select(..., AVG(overall_score))`, a composite index including the filtered column, the grouping column, AND the aggregated column (e.g., `[:status, :recruiter_id, :overall_score]`) enables an Index Only Scan, avoiding expensive heap fetches for every row in the group.
+**Action:** Always include aggregated columns in the index when optimizing `GROUP BY` queries on large tables to achieve Index Only Scans.
