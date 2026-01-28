@@ -16,7 +16,7 @@
       <input type="number" min="1" max="<%= public_max_per_page %>" name="per_page" id="per_page" value="<%= @per_page %>">
     </div>
     <div>
-      <button type="submit"><%= t('recruiters.index.filter') %></button>
+      <button type="submit" class="cta mt-0"><%= t('recruiters.index.filter') %></button>
       <%= link_to t('recruiters.index.clear'), companies_path, style: "margin-left:6px;", aria: { label: t('companies.index.clear_filters') } %>
     </div>
   </div>
