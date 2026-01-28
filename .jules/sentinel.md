@@ -34,3 +34,8 @@
 **Vulnerability:** Three admin controllers duplicated `require_moderator_auth` logic, all defaulting to "mod"/"mod" credentials if environment variables were missing. This created a risk of accidental exposure in production if configuration was missed, and violated DRY making it hard to secure them all.
 **Learning:** Security logic (authentication/authorization) must be centralized. Duplicated security logic inevitably drifts or relies on unsafe defaults for developer convenience that can leak into production.
 **Prevention:** Centralize admin authentication in a base controller (`Admin::BaseController`) and enforce strict credential requirements in production (fail closed if config is missing), allowing unsafe defaults *only* in development/test environments.
+
+## 2026-01-28 - Missing Validation on Associated Model
+**Vulnerability:** The `ReviewResponse` model lacked a maximum length validation on `body`, despite the parent `Review` model having one on `text`. This exposed the application to DoS attacks via large payloads.
+**Learning:** Security fixes often miss associated models. When securing a primary model (e.g., Review), explicitly check its children (e.g., ReviewResponse) for similar vulnerabilities.
+**Prevention:** Audit all free-text fields in the schema for length constraints and enforce them in models.
