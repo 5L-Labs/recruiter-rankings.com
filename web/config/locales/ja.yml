@@ -35,6 +35,7 @@ ja:
       write_review: "レビューを書く"
       claim_profile: "プロフィールを申請"
       right_of_reply: "回答"
+      no_reviews: "まだレビューはありません。最初のレビューを書いてみませんか？"
   companies:
     index:
       no_results: "条件に一致する会社は見つかりませんでした。"
