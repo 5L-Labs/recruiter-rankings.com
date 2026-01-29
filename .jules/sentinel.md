@@ -34,3 +34,8 @@
 **Vulnerability:** Three admin controllers duplicated `require_moderator_auth` logic, all defaulting to "mod"/"mod" credentials if environment variables were missing. This created a risk of accidental exposure in production if configuration was missed, and violated DRY making it hard to secure them all.
 **Learning:** Security logic (authentication/authorization) must be centralized. Duplicated security logic inevitably drifts or relies on unsafe defaults for developer convenience that can leak into production.
 **Prevention:** Centralize admin authentication in a base controller (`Admin::BaseController`) and enforce strict credential requirements in production (fail closed if config is missing), allowing unsafe defaults *only* in development/test environments.
+
+## 2026-02-14 - Lack of Content Security Policy (CSP)
+**Vulnerability:** The application had CSP configuration commented out, leaving it vulnerable to XSS and data injection attacks. Inline scripts and styles in the layout required careful handling.
+**Learning:** Enabling CSP in existing applications often requires handling inline scripts and styles. Using nonces for scripts is a robust way to allow necessary inline scripts without allowing all inline scripts (`unsafe-inline`). For styles, `unsafe-inline` is often a necessary compromise to avoid massive CSS refactoring.
+**Prevention:** Enable CSP by default in new applications. Use nonces for all inline scripts.
