@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2026-05-24 - Flash Message Styles in Custom CSS
+**Learning:** In Rails apps with custom CSS, standard flash message classes like `.alert` and `.alert-danger` are often referenced in `application.html.erb` but missing from the stylesheet, rendering feedback invisible.
+**Action:** Always verify that `.alert` classes are defined in the project's CSS (e.g., `web/public/assets/style.css`) and test that flash messages are actually visible.

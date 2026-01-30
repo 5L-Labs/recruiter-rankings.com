@@ -12,7 +12,7 @@
 
 <% last_challenge = @recruiter.identity_challenges.order(created_at: :desc).first %>
 <% if last_challenge && !last_challenge.verified_at && last_challenge.last_verification_error.present? %>
-  <div class="alert alert-error" style="border: 1px solid red; padding: 10px; margin-bottom: 10px; color: red;">
+  <div class="alert alert-danger">
     <strong>Verification Failed:</strong> <%= last_challenge.last_verification_error %>
     <p>Please <a href="<%= new_claim_identity_path(subject_type: 'recruiter', recruiter_slug: @recruiter.public_slug) %>">try again</a>.</p>
   </div>
