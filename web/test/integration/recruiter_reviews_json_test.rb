@@ -21,5 +21,27 @@ class RecruiterReviewsJsonTest < ActionDispatch::IntegrationTest
     assert item.key?("text")
     assert item.key?("created_at")
   end
+
+  test "reviews json respects max per page limit" do
+    # Create 55 more reviews (total 57)
+    55.times do |i|
+      Review.create!(
+        user: @user,
+        recruiter: @recruiter,
+        company: @company,
+        overall_score: 4,
+        text: "Review #{i}",
+        status: "approved"
+      )
+    end
+
+    get "/recruiters/ava-tanaka/reviews.json", params: { per: 100 }
+    assert_response :success
+    arr = JSON.parse(@response.body)
+    assert_kind_of Array, arr
+
+    # default max is 50
+    assert_equal 50, arr.length
+  end
 end
 
