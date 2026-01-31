@@ -63,6 +63,8 @@ en:
       average_overall: "Average overall"
       recent_reviews: "Recent reviews"
       write_review: "Write a review"
+      write_first_review: "Write the first review"
+      no_reviews_yet: "No reviews yet. Be the first to share your experience!"
       claim_profile: "Claim this profile"
       right_of_reply: "Right-of-reply"
   companies:
