@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2025-05-24 - Empty States in Detail Views
+**Learning:** Detail views (like `recruiters/show`) that list related items (like `reviews`) often feel broken when that list is empty. A friendly "empty state" with a CTA to create the first item is essential for engagement.
+**Action:** Always check for empty associations in show views and render a `.card` with a helpful message and a CTA instead of rendering nothing.
