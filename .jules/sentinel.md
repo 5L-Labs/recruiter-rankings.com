@@ -34,3 +34,8 @@
 **Vulnerability:** Three admin controllers duplicated `require_moderator_auth` logic, all defaulting to "mod"/"mod" credentials if environment variables were missing. This created a risk of accidental exposure in production if configuration was missed, and violated DRY making it hard to secure them all.
 **Learning:** Security logic (authentication/authorization) must be centralized. Duplicated security logic inevitably drifts or relies on unsafe defaults for developer convenience that can leak into production.
 **Prevention:** Centralize admin authentication in a base controller (`Admin::BaseController`) and enforce strict credential requirements in production (fail closed if config is missing), allowing unsafe defaults *only* in development/test environments.
+
+## 2026-02-05 - DoS via Uncapped Pagination
+**Vulnerability:** `ReviewsController#index` accepted a `per` parameter which defaulted to 10 but had no upper limit. An attacker could request an extremely large number of records (e.g., `per=1000000`), causing resource exhaustion (DoS).
+**Learning:** Default values protect against *missing* parameters but not *malicious* ones. Input validation must strictly enforce upper bounds on resource allocation.
+**Prevention:** Clamp all pagination parameters using a server-side maximum (e.g., `[[params[:per].to_i, 1].max, MAX_PER_PAGE].min`).
