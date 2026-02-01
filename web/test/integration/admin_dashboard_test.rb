@@ -31,5 +31,50 @@ class AdminDashboardTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "Hidden responses"
     assert_includes @response.body, "Recent moderation actions"
   end
-end
 
+  test "dashboard avoids N+1 on moderation actions" do
+    # Create 5 moderation actions with distinct actors
+    5.times do |i|
+      actor = User.create!(role: "moderator", email_hmac: "mod_hmac_#{i}")
+      ModerationAction.create!(actor: actor, action: "test:#{i}", subject: @user, notes: "note")
+    end
+
+    # 1. Pending count
+    # 2. Flagged count
+    # 3. Hidden responses count
+    # 4. Recent submissions count
+    # 5. Verification backlog count
+    # 6. Recent actions load
+    # Total expected: ~6 queries.
+    # N+1 would add 5 queries (one for each actor). Total > 11.
+
+    assert_queries(10) do
+      get "/admin", headers: auth_headers
+    end
+    assert_response :success
+  end
+
+  private
+
+  def assert_queries(expected_count, &block)
+    counter = QueryCounter.new
+    subscriber = ActiveSupport::Notifications.subscribe("sql.active_record", counter)
+    yield
+    ActiveSupport::Notifications.unsubscribe(subscriber)
+
+    assert_operator counter.count, :<=, expected_count, "Expected #{expected_count} queries or fewer, but got #{counter.count}"
+  end
+
+  class QueryCounter
+    attr_reader :count
+
+    def initialize
+      @count = 0
+    end
+
+    def call(name, start, finish, id, payload)
+      return if payload[:name] == "SCHEMA" || payload[:name] == "CACHE"
+      @count += 1
+    end
+  end
+end
