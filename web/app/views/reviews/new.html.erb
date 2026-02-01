@@ -11,9 +11,24 @@
 
   <div>
     <%= f.label :text, t('reviews.new.your_experience') %> <span style="color:#ef4444" aria-hidden="true">*</span><br>
-    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help' } %>
-    <small id="text-help" class="muted" style="display:block; margin-top:4px;"><%= t('reviews.new.text_help') %></small>
+    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help char-count' }, id: 'review_text' %>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <small id="text-help" class="muted" style="margin-top:4px;"><%= t('reviews.new.text_help') %></small>
+      <small id="char-count" class="muted" style="margin-top:4px;"><%= f.object.text.to_s.length %>/5000</small>
+    </div>
   </div>
+
+  <script nonce="<%= content_security_policy_nonce %>">
+    document.addEventListener('DOMContentLoaded', function() {
+      var text = document.getElementById('review_text');
+      var count = document.getElementById('char-count');
+      if (text && count) {
+        function update() { count.textContent = text.value.length + '/5000'; }
+        text.addEventListener('input', update);
+        update();
+      }
+    });
+  </script>
 
   <div>
     <%= f.label :email, t('reviews.new.email_optional') %><br>

@@ -16,10 +16,11 @@ class ReviewSubmissionTest < ActionDispatch::IntegrationTest
 
     # Check for maxlength and aria-describedby on text area
     assert_select "textarea[name='review[text]'][maxlength='5000']"
-    assert_select "textarea[name='review[text]'][aria-describedby='text-help']"
+    assert_select "textarea[name='review[text]'][aria-describedby='text-help char-count']"
 
-    # Check for help text
+    # Check for help text and character counter
     assert_select "#text-help", /Max 5000 characters/
+    assert_select "#char-count", /0\/5000/
   end
 
   test "can submit a review" do
