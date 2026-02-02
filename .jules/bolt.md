@@ -11,3 +11,7 @@
 ## 2026-01-23 - Index Only Scan for Aggregation
 **Learning:** For aggregation queries like `Review.where(status: "approved").group(:recruiter_id).select(..., AVG(overall_score))`, a composite index including the filtered column, the grouping column, AND the aggregated column (e.g., `[:status, :recruiter_id, :overall_score]`) enables an Index Only Scan, avoiding expensive heap fetches for every row in the group.
 **Action:** Always include aggregated columns in the index when optimizing `GROUP BY` queries on large tables to achieve Index Only Scans.
+
+## 2026-02-06 - Migration Reversibility
+**Learning:** Using `remove_index` inside a `change` method requires passing the `column` option (e.g., `remove_index :table, column: :col, name: "idx"`) so Rails can recreate the index during rollback. Providing only the name breaks reversibility.
+**Action:** Always include `column` or use `up/down` methods when removing indexes.
