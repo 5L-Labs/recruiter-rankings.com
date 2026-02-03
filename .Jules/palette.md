@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2025-05-23 - Micro-interactions in Forms
+**Learning:** For inputs with `maxlength`, a simple client-side character counter (e.g., "0 / 5000") adds significant clarity and prevents frustration.
+**Action:** When adding character counters, ensure they are initialized with the server-side value (e.g., `f.object.text.length`) to handle validation re-renders correctly, and link them via `aria-describedby`.
