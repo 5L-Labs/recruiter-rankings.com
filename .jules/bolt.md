@@ -11,3 +11,7 @@
 ## 2026-01-23 - Index Only Scan for Aggregation
 **Learning:** For aggregation queries like `Review.where(status: "approved").group(:recruiter_id).select(..., AVG(overall_score))`, a composite index including the filtered column, the grouping column, AND the aggregated column (e.g., `[:status, :recruiter_id, :overall_score]`) enables an Index Only Scan, avoiding expensive heap fetches for every row in the group.
 **Action:** Always include aggregated columns in the index when optimizing `GROUP BY` queries on large tables to achieve Index Only Scans.
+
+## 2026-02-06 - Sort-Covering Index
+**Learning:** When a frequently executed query includes both filtering and sorting (e.g. `where(status: 'approved', recruiter_id: 1).order(created_at: :desc)`), a composite index on `(recruiter_id, status, created_at)` allows the database to skip the explicit Sort operation by reading the index in order.
+**Action:** Identify queries with `order(...)` clauses in high-traffic views and ensure the order column is included at the end of the composite index used for filtering.
