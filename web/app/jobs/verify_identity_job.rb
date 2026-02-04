@@ -30,14 +30,9 @@ class VerifyIdentityJob < ApplicationJob
             recruiter = Recruiter.find(challenge.subject_id)
             recruiter.update!(verified_at: Time.current)
           when 'User'
-            # Users might have specific verification logic, but usually just the challenge is enough
-            # or we might mark the user as verified if that column existed.
-            # The controller had: flash[:notice] = 'User identity verified.'
-            # The DB schema shows users have linked_in_url but no verified_at column.
-            # Recruiters have verified_at.
-            # ProfileClaims have verified_at.
-
-            # The controller didn't update User model beyond what was done in create.
+            # Only update the user's LinkedIn URL after successful verification
+            user = User.find(challenge.subject_id)
+            user.update!(linked_in_url: challenge.linkedin_url)
           end
         end
       else
