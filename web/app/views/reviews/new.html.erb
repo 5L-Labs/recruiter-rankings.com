@@ -10,10 +10,24 @@
   </div>
 
   <div>
-    <%= f.label :text, t('reviews.new.your_experience') %> <span style="color:#ef4444" aria-hidden="true">*</span><br>
-    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help' } %>
+    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+      <div>
+        <%= f.label :text, t('reviews.new.your_experience') %> <span style="color:#ef4444" aria-hidden="true">*</span>
+      </div>
+      <small id="char-count" class="muted"><%= f.object.text.to_s.length %>/5000</small>
+    </div>
+    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help char-count' }, oninput: "document.getElementById('char-count').innerText = this.value.length + '/5000'" %>
     <small id="text-help" class="muted" style="display:block; margin-top:4px;"><%= t('reviews.new.text_help') %></small>
   </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var text = document.querySelector('textarea[name="review[text]"]');
+      var count = document.getElementById("char-count");
+      if (text && count) {
+        count.innerText = text.value.length + "/5000";
+      }
+    });
+  </script>
 
   <div>
     <%= f.label :email, t('reviews.new.email_optional') %><br>
