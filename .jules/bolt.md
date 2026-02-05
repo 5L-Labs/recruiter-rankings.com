@@ -11,3 +11,7 @@
 ## 2026-01-23 - Index Only Scan for Aggregation
 **Learning:** For aggregation queries like `Review.where(status: "approved").group(:recruiter_id).select(..., AVG(overall_score))`, a composite index including the filtered column, the grouping column, AND the aggregated column (e.g., `[:status, :recruiter_id, :overall_score]`) enables an Index Only Scan, avoiding expensive heap fetches for every row in the group.
 **Action:** Always include aggregated columns in the index when optimizing `GROUP BY` queries on large tables to achieve Index Only Scans.
+
+## 2026-02-05 - Filtered Aggregation Scope
+**Learning:** When aggregating data for a subset of records (e.g., reviews for recruiters of a specific company), always filter the source table (Reviews) by the subset (Recruiters) before grouping, to avoid scanning the entire table.
+**Action:** Use `where(foreign_key: subset_relation.select(:id))` on the aggregation query.
