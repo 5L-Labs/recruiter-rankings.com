@@ -34,3 +34,8 @@
 **Vulnerability:** Three admin controllers duplicated `require_moderator_auth` logic, all defaulting to "mod"/"mod" credentials if environment variables were missing. This created a risk of accidental exposure in production if configuration was missed, and violated DRY making it hard to secure them all.
 **Learning:** Security logic (authentication/authorization) must be centralized. Duplicated security logic inevitably drifts or relies on unsafe defaults for developer convenience that can leak into production.
 **Prevention:** Centralize admin authentication in a base controller (`Admin::BaseController`) and enforce strict credential requirements in production (fail closed if config is missing), allowing unsafe defaults *only* in development/test environments.
+
+## 2026-03-01 - Denial of Service via Unclamped Pagination
+**Vulnerability:** `ReviewsController#index` and `CompaniesController#index` (JSON) accepted a `per` parameter directly from user input without an upper bound. A malicious user could request an excessively large number of records (e.g., `?per=1000000`), potentially causing database overload and memory exhaustion (DoS).
+**Learning:** Defaulting parameter values (`|| 10`) is insufficient for security; input must be actively clamped or validated against a safe maximum (`public_max_per_page`).
+**Prevention:** Always use `.clamp(min, max)` or explicit bounds checks on user-provided limit/offset parameters.

@@ -32,7 +32,7 @@ class CompaniesController < ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        per = (params[:per].presence || 5).to_i
+        per = (params[:per].presence || 5).to_i.clamp(1, public_max_per_page)
         render json: scope.limit(per).map { |c|
           { id: c.id, name: c.name, reviews_count: c.attributes['reviews_count'].to_i, avg_overall: c.attributes['avg_overall']&.to_f }
         }
