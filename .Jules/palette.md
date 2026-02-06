@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2026-02-06 - Initializing Client-Side Counters
+**Learning:** For server-rendered forms (Rails), client-side counters must be initialized with the server-side value (e.g., `f.object.text.length`) to handle validation error re-renders correctly.
+**Action:** Always inject the initial length into the counter element or JS initialization logic instead of assuming 0 start.
