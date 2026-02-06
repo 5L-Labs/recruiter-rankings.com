@@ -1,9 +1,13 @@
 class VerifyIdentityJob < ApplicationJob
   queue_as :default
 
-  def perform(challenge_id, linkedin_url)
+  def perform(challenge_id, _linkedin_url = nil)
     challenge = IdentityChallenge.find_by(id: challenge_id)
     return unless challenge
+
+    # Security: Always use the stored URL from the challenge to ensure
+    # we verify the same URL that we update the user with.
+    target_url = challenge.linkedin_url
 
     # Don't re-verify if already verified
     return if challenge.verified_at.present?
@@ -18,7 +22,7 @@ class VerifyIdentityJob < ApplicationJob
     fetcher = LinkedInFetcher.new
 
     begin
-      body = fetcher.fetch(linkedin_url)
+      body = fetcher.fetch(target_url)
 
       if body&.include?(token)
         challenge.transaction do
@@ -30,14 +34,9 @@ class VerifyIdentityJob < ApplicationJob
             recruiter = Recruiter.find(challenge.subject_id)
             recruiter.update!(verified_at: Time.current)
           when 'User'
-            # Users might have specific verification logic, but usually just the challenge is enough
-            # or we might mark the user as verified if that column existed.
-            # The controller had: flash[:notice] = 'User identity verified.'
-            # The DB schema shows users have linked_in_url but no verified_at column.
-            # Recruiters have verified_at.
-            # ProfileClaims have verified_at.
-
-            # The controller didn't update User model beyond what was done in create.
+            # Update the user's LinkedIn URL now that ownership is verified
+            user = User.find(challenge.subject_id)
+            user.update!(linked_in_url: challenge.linkedin_url)
           end
         end
       else
