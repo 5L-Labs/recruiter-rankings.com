@@ -27,7 +27,8 @@ class ClaimIdentityController < ApplicationController
       subject = recruiter
     when 'user'
       user = find_or_create_user(@email)
-      user.update!(linked_in_url: @linkedin_url) if @linkedin_url.present?
+      # Security Fix: Do not update linked_in_url here as it allows account takeover.
+      # It will be updated in VerifyIdentityJob upon successful verification.
       subject = user
     else
       raise ActionController::BadRequest, 'Invalid subject_type'
