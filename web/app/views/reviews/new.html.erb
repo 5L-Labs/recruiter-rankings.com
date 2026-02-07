@@ -11,8 +11,11 @@
 
   <div>
     <%= f.label :text, t('reviews.new.your_experience') %> <span style="color:#ef4444" aria-hidden="true">*</span><br>
-    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help' } %>
-    <small id="text-help" class="muted" style="display:block; margin-top:4px;"><%= t('reviews.new.text_help') %></small>
+    <%= f.text_area :text, rows: 6, required: true, maxlength: 5000, placeholder: t('reviews.new.your_experience_placeholder'), aria: { describedby: 'text-help text-counter' } %>
+    <div style="display:flex; justify-content:space-between; margin-top:4px;">
+      <small id="text-help" class="muted"><%= t('reviews.new.text_help') %></small>
+      <small id="text-counter" class="muted">0/5000</small>
+    </div>
   </div>
 
   <div>
@@ -25,3 +28,29 @@
   </div>
 <% end %>
 
+<script>
+  (function() {
+    function init() {
+      var area = document.getElementById('review_text');
+      var counter = document.getElementById('text-counter');
+      if (!area || !counter) return;
+
+      // Avoid double binding
+      if (area.dataset.counterInitialized) return;
+      area.dataset.counterInitialized = 'true';
+
+      var max = area.maxLength > 0 ? area.maxLength : 5000;
+
+      function update() {
+        counter.textContent = area.value.length + '/' + max;
+      }
+
+      area.addEventListener('input', update);
+      // Initial update in case of pre-filled value
+      update();
+    }
+
+    document.addEventListener('turbo:load', init);
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>

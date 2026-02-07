@@ -17,3 +17,7 @@
 ## 2025-01-25 - Empty State Pattern & Card Usage
 **Learning:** The `.card` class provides a consistent container for "empty states" and other isolated content blocks, replacing ad-hoc inline styles.
 **Action:** When implementing empty states or highlighted content, prefer `class="card"` with minimal overrides (like padding/text-align) over full inline styling.
+
+## 2024-05-22 - [Turbo Compatibility for Inline Scripts]
+**Learning:** Inline scripts using `DOMContentLoaded` may not fire on Turbo/Turbolinks navigation.
+**Action:** Use a pattern that listens to both `turbo:load` and `DOMContentLoaded`, and ensure idempotent event binding (e.g., via `dataset`).
