@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Orb setup for the Next.js rewrite (modern_app/). Idempotent; safe on a warm snapshot.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+step() { printf '\n==> %s\n' "$*"; }
+timed() { local start=$SECONDS; "$@"; echo "    took $((SECONDS - start))s: $*"; }
+
+PG_VERSION=15
+PG_URL=postgres://postgres:postgres@localhost:5432
+
+step "PostgreSQL ${PG_VERSION}"
+if [[ ! -x /usr/lib/postgresql/${PG_VERSION}/bin/postgres ]]; then
+  timed sudo apt-get update -qq
+  timed sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql postgresql-client
+fi
+# Orb data is disposable: trade durability for speed.
+sudo tee /etc/postgresql/${PG_VERSION}/main/conf.d/orb.conf >/dev/null <<'EOF'
+fsync = off
+synchronous_commit = off
+full_page_writes = off
+EOF
+sudo systemctl enable postgresql >/dev/null 2>&1 || true
+sudo pg_ctlcluster ${PG_VERSION} main restart
+for _ in $(seq 1 20); do pg_isready -q -h localhost && break; sleep 0.5; done
+sudo -u postgres psql -qc "ALTER USER postgres PASSWORD 'postgres'"
+for db in rr_dev rr_test; do
+  if [[ "$(sudo -u postgres psql -qAtc "SELECT 1 FROM pg_database WHERE datname = '$db'")" != "1" ]]; then
+    sudo -u postgres createdb "$db"
+  fi
+done
+
+step "modern_app dependencies"
+cd modern_app
+timed npm ci --no-audit --no-fund
+[[ -f .env.local ]] || cp -- .env.example .env.local
+
+step "Databases"
+DATABASE_URL=$PG_URL/rr_dev bash scripts/db-setup.sh --seed
+DATABASE_URL=$PG_URL/rr_test bash scripts/db-setup.sh
+
+step "Done"

@@ -144,3 +144,6 @@ recruiters_draft.csv
 # Claude agent configuration
 .claude/
 
+
+# Amp orb portal manifests (generated)
+.amp/portals/

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Make sure Postgres is up after an orb wakes. Must stay fast.
+set -euo pipefail
+
+if ! pg_isready -q -h localhost; then
+  sudo pg_ctlcluster 15 main start
+fi

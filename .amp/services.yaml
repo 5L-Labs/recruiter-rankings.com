@@ -1,0 +1,8 @@
+services:
+  web:
+    command: npm run dev -- --hostname 0.0.0.0 --port "$PORT"
+    cwd: modern_app
+    portal:
+      url: /
+      title: Recruiter Rankings (Next.js)
+      description: Synthetic seed data. Try /search?q=seed or /person/RR-0008 (public) and /person/RR-0001 (below threshold).
