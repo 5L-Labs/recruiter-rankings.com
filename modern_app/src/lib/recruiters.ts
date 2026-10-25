@@ -1,17 +1,37 @@
 import { query } from '@/lib/db';
+import { maskedRecruiterName } from '@/lib/privacy';
 
-export async function getRecruiters(searchQuery?: string) {
-  if (!searchQuery) return [];
+export interface RecruiterSearchResult {
+  slug: string;
+  displayName: string;
+  companyName: string | null;
+  region: string | null;
+}
 
-  // Simple search implementation based on pseudonym or company
-  const sql = `
-    SELECT r.id, r.pseudonym, c.name as company_name 
-    FROM recruiters r
-    JOIN companies c ON r.company_id = c.id
-    WHERE r.pseudonym ILIKE $1 OR c.name ILIKE $1
-    LIMIT 20
-  `;
-  
-  const result = await query(sql, [`%${searchQuery}%`]);
-  return result.rows;
+export const MIN_SEARCH_LENGTH = 2;
+
+function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+export async function searchRecruiters(rawQuery: string): Promise<RecruiterSearchResult[]> {
+  const q = rawQuery.trim();
+  if (q.length < MIN_SEARCH_LENGTH) return [];
+
+  const result = await query(
+    `SELECT r.public_slug, r.region, c.name AS company_name
+       FROM recruiters r
+       LEFT JOIN companies c ON c.id = r.company_id
+      WHERE r.name ILIKE $1 OR c.name ILIKE $1
+      ORDER BY r.public_slug
+      LIMIT 20`,
+    [`%${escapeLike(q)}%`]
+  );
+
+  return result.rows.map((row) => ({
+    slug: row.public_slug,
+    displayName: maskedRecruiterName(row.public_slug),
+    companyName: row.company_name,
+    region: row.region,
+  }));
 }

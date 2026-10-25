@@ -1,44 +1,43 @@
-import { pool } from './db';
+import { query } from '@/lib/db';
 
-export type TakedownStatus = 'pending' | 'in_review' | 'resolved' | 'rejected';
+export const TAKEDOWN_REASONS = {
+  inaccurate: 'Inaccurate information',
+  defamatory: 'Defamatory content',
+  privacy: 'Privacy violation',
+  other: 'Other',
+} as const;
 
-export interface TakedownRequest {
-  id: number;
-  subject_type: 'Review' | 'Recruiter';
-  subject_id: number;
-  requester_email: string;
+export type TakedownReason = keyof typeof TAKEDOWN_REASONS;
+
+// Standard SLA from the published takedown policy (web/app/views/pages/policies.html.erb).
+export const TAKEDOWN_SLA_DAYS = 7;
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export type TakedownInput = {
+  recruiterSlug: string;
+  requesterEmail: string;
   reason: string;
-  status: TakedownStatus;
-  created_at: Date;
-}
+};
 
-export async function createTakedownRequest(data: {
-  subject_type: 'Review' | 'Recruiter';
-  subject_id: number;
-  requester_email: string;
-  reason: string;
-}) {
-  const { subject_type, subject_id, requester_email, reason } = data;
-  const result = await pool.query(
-    'INSERT INTO takedown_requests (subject_type, subject_id, requester_email, reason) VALUES ($1, $2, $3, $4) RETURNING *',
-    [subject_type, subject_id, requester_email, reason]
+export type TakedownResult =
+  | { ok: true; id: number }
+  | { ok: false; error: 'invalid_email' | 'invalid_reason' | 'unknown_recruiter' };
+
+export async function createTakedownRequest(input: TakedownInput): Promise<TakedownResult> {
+  const email = input.requesterEmail.trim();
+  if (!EMAIL_PATTERN.test(email) || email.length > 254) return { ok: false, error: 'invalid_email' };
+  if (!Object.hasOwn(TAKEDOWN_REASONS, input.reason)) return { ok: false, error: 'invalid_reason' };
+
+  const result = await query(
+    `INSERT INTO takedown_requests
+       (subject_type, subject_id, requested_by, reason_code, status, sla_due_at, created_at, updated_at)
+     SELECT 'Recruiter', r.id, $2, $3, 'pending', now() + make_interval(days => $4), now(), now()
+       FROM recruiters r
+      WHERE r.public_slug = $1
+     RETURNING id`,
+    [input.recruiterSlug.trim(), email, input.reason, TAKEDOWN_SLA_DAYS]
   );
-  return result.rows[0];
-}
-
-export async function getTakedownRequests(status?: TakedownStatus) {
-  const query = status 
-    ? 'SELECT * FROM takedown_requests WHERE status = $1 ORDER BY created_at DESC'
-    : 'SELECT * FROM takedown_requests ORDER BY created_at DESC';
-  const params = status ? [status] : [];
-  const result = await pool.query(query, params);
-  return result.rows;
-}
-
-export async function updateTakedownStatus(id: number, status: TakedownStatus) {
-  const result = await pool.query(
-    'UPDATE takedown_requests SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *',
-    [status, id]
-  );
-  return result.rows[0];
+  if (result.rowCount === 0) return { ok: false, error: 'unknown_recruiter' };
+  return { ok: true, id: Number(result.rows[0].id) };
 }

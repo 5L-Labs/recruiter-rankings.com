@@ -1,23 +1,25 @@
-# Modern Framework Implementation: Status & Handoff
+# Next.js rewrite: status
 
-## Current Status
-- **Implementation**: Next.js 16, TypeScript, Tailwind CSS.
-- **Data Layer**: Direct `pg` (node-postgres) pool in `src/lib/db.ts` to minimize overhead.
-- **Verified Routes**: `/search`, `/recruiters/[slug]`, `/reviews/new`, `/claim-identity`.
-- **Branch**: `orbit-modern-next`
+Stack: Next.js 16 (App Router), React 19, Tailwind 4, `pg`, Vitest. Schema baseline in
+`db/schema.sql`, generated from the Rails schema.
 
-## Accomplishments
-- Fixed TypeScript type errors in `claim-identity`, `recruiters/[slug]`, and `search` pages.
-- Resolved missing type declarations for `pg` by installing `@types/pg`.
-- Verified successful production build (`npm run build`) and runtime startup (`npm run start`).
+## Working
 
-## Pending Tasks (The Gameplan)
-1. **Integration Testing**: Verify the full Review $\rightarrow$ k-anonymity check $\rightarrow$ Database flow.
-2. **Identity Verification**: Implement the actual email dispatch for `/claim-identity` (currently a mock).
-3. **Deployment**: Deploy to Render.com (Target cost: ~$5/mo).
-4. **Final Polish**: UI/UX refinements based on `openspec/project.md`.
+| Route | Notes |
+|---|---|
+| `/search` | Name or company search, masked names, LIKE wildcards escaped |
+| `/person/[slug]` | Overall and per-dimension averages of approved experiences, hidden below `PUBLIC_MIN_REVIEWS` |
+| `/takedown` | Recruiter-profile takedowns into `takedown_requests` with a 7-day SLA |
+| `/sitemap.xml` | Uses `CANONICAL_URL` and `/person/:slug` |
+| `/recruiters/:slug`, `/recruiters`, `/person` | Permanent redirects matching the Rails URLs |
 
-## Critical Notes for Next Agent
-- Use `npm run build` to ensure type safety before any commit.
-- The project avoids ORMs (Prisma/Drizzle) by design to keep the app lightweight.
-- Refer to `openspec/project.md` for privacy constraints and the k-anonymity logic.
+## Disabled until Clerk sign-in is wired
+
+- `/reviews/new`: must write `interactions` + `experiences` + `review_metrics` for the signed-in user.
+- `/claim-identity`: must use `identity_challenges` (hashed token) and envelope-encrypted email.
+
+## Not ported yet
+
+Admin moderation (reviews, responses, identity verifications), companies pages, LinkedIn
+verification, subscriptions/Paddle, rate limiting (rack-attack), CSP headers, i18n, about/policies
+pages, backups, deployment.

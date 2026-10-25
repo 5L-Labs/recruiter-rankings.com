@@ -1,61 +1,65 @@
 import { query } from '@/lib/db';
+import { maskedRecruiterName, publicMinReviews } from '@/lib/privacy';
 
-export interface ReviewMetric {
-  metric_name: string;
-  value: number;
+export interface RecruiterProfile {
+  slug: string;
+  displayName: string;
+  companyName: string | null;
+  region: string | null;
+  verified: boolean;
+  reviewsCount: number;
+  threshold: number;
+  // Aggregates are null until reviewsCount reaches the k-anonymity threshold.
+  avgRating: number | null;
+  dimensionAverages: Record<string, number> | null;
 }
 
-export interface Review {
-  id: number;
-  recruiter_id: number;
-  user_id: string | null;
-  content: string;
-  status: string;
-  created_at: string;
-  metrics: ReviewMetric[];
-}
+export async function getRecruiterProfile(slug: string): Promise<RecruiterProfile | null> {
+  const recruiterResult = await query(
+    `SELECT r.id, r.public_slug, r.region, r.verified_at, c.name AS company_name
+       FROM recruiters r
+       LEFT JOIN companies c ON c.id = r.company_id
+      WHERE r.public_slug = $1`,
+    [slug]
+  );
+  const recruiter = recruiterResult.rows[0];
+  if (!recruiter) return null;
 
-export async function getRecruiterBySlug(slug: string) {
-  const sql = `
-    SELECT r.*, c.name as company_name 
-    FROM recruiters r
-    JOIN companies c ON r.company_id = c.id
-    WHERE r.pseudonym = $1
-    LIMIT 1
-  `;
-  const result = await query(sql, [slug]);
-  return result.rows[0];
-}
+  const threshold = publicMinReviews();
+  const aggregate = await query(
+    `SELECT COUNT(*)::int AS count, AVG(e.rating)::float AS avg
+       FROM experiences e
+       JOIN interactions i ON i.id = e.interaction_id
+      WHERE i.recruiter_id = $1 AND e.status = 'approved'`,
+    [recruiter.id]
+  );
+  const reviewsCount: number = aggregate.rows[0].count;
+  const isPublic = reviewsCount >= threshold;
 
-export async function getRecruiterReviews(recruiterId: number): Promise<Review[]> {
-  const sql = `
-    SELECT rv.*, rm.metric_name, rm.value 
-    FROM reviews rv
-    LEFT JOIN review_metrics rm ON rv.id = rm.review_id
-    WHERE rv.recruiter_id = $1
-    ORDER BY rv.created_at DESC
-  `;
-  const result = await query(sql, [recruiterId]);
-  
-  const reviewsMap = new Map<number, Review>();
-  for (const row of result.rows) {
-    if (!reviewsMap.has(row.id)) {
-      reviewsMap.set(row.id, {
-        id: row.id,
-        recruiter_id: row.recruiter_id,
-        user_id: row.user_id,
-        content: row.content,
-        status: row.status,
-        created_at: row.created_at,
-        metrics: []
-      });
-    }
-    if (row.metric_name) {
-      reviewsMap.get(row.id)!.metrics.push({
-        metric_name: row.metric_name,
-        value: row.value
-      });
-    }
+  let dimensionAverages: Record<string, number> | null = null;
+  if (isPublic) {
+    const dims = await query(
+      `SELECT m.dimension, AVG(m.score)::float AS avg
+         FROM review_metrics m
+         JOIN experiences e ON e.id = m.experience_id
+         JOIN interactions i ON i.id = e.interaction_id
+        WHERE i.recruiter_id = $1 AND e.status = 'approved'
+        GROUP BY m.dimension
+        ORDER BY m.dimension`,
+      [recruiter.id]
+    );
+    dimensionAverages = Object.fromEntries(dims.rows.map((row) => [row.dimension, row.avg]));
   }
-  return Array.from(reviewsMap.values());
+
+  return {
+    slug: recruiter.public_slug,
+    displayName: maskedRecruiterName(recruiter.public_slug),
+    companyName: recruiter.company_name,
+    region: recruiter.region,
+    verified: recruiter.verified_at !== null,
+    reviewsCount,
+    threshold,
+    avgRating: isPublic ? aggregate.rows[0].avg : null,
+    dimensionAverages,
+  };
 }
