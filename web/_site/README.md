@@ -105,7 +105,7 @@ CMD ["bin/rails", "server", "-b", "0.0.0.0"]
 
 ### docker-compose.yml
 
-Set `DATABASE_URL` to the full connection URL for the local `db` service, matching its user, password, and database name. Export it in your shell before running Compose. Then create a `docker-compose.yml` for local development:
+Set and export `DATABASE_URL` to the full connection URL for the local `db` service before running Compose. Use host `db` (not `localhost`), match the service's user, password, and database name, and percent-encode any special characters in the URL. Then create a `docker-compose.yml` for local development:
 
 ```yaml
 version: '3.8'
