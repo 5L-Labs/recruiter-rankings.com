@@ -42,7 +42,7 @@ namespace :db do
 
       unless s3_key
         abort "Error: s3_key required.\n" \
-              "Usage: rake 'db:backup:restore[backup-YYYYMMDD-HHMMSS.sql.gz,postgres://user:pass@host/db]'"
+              "Usage: set DATABASE_URL to the full target URL, then run rake 'db:backup:restore[backup-YYYYMMDD-HHMMSS.sql.gz]'"
       end
       abort "Error: target_db_url required (or set DATABASE_URL)" unless target_db_url
 

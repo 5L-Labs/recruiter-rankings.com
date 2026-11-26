@@ -1,9 +1,12 @@
 require "test_helper"
 require "minitest/mock"
 require "ostruct"
+require "securerandom"
+require "uri"
 
 class BackupServiceErrorPathsTest < ActiveSupport::TestCase
   setup do
+    @mock_database_url = URI::Generic.build(scheme: 'postgresql', userinfo: "fixture:#{SecureRandom.hex(16)}", host: 'db.example.invalid', path: '/fixture').to_s
     @storage = Minitest::Mock.new
     @render_client = Minitest::Mock.new
     @service = BackupService.new(storage_adapter: @storage, render_client: @render_client, retention_days: 7)
@@ -46,7 +49,7 @@ class BackupServiceErrorPathsTest < ActiveSupport::TestCase
   test "raises BackupError when pg_dump pipeline fails" do
     db_info = {
       'name' => 'main-db',
-      'connectionInfo' => { 'externalConnectionString' => 'postgres://user:pass@host/db' }
+      'connectionInfo' => { 'externalConnectionString' => @mock_database_url }
     }
     @render_client.expect :find_database_by_name, db_info, ['main-db']
 
@@ -79,7 +82,7 @@ class BackupServiceErrorPathsTest < ActiveSupport::TestCase
   test "raises BackupError when encryption fails" do
     db_info = {
       'name' => 'main-db',
-      'connectionInfo' => { 'externalConnectionString' => 'postgres://user:pass@host/db' }
+      'connectionInfo' => { 'externalConnectionString' => @mock_database_url }
     }
     @render_client.expect :find_database_by_name, db_info, ['main-db']
 
@@ -119,7 +122,7 @@ class BackupServiceErrorPathsTest < ActiveSupport::TestCase
   test "raises error and sends failure notification when upload fails" do
     db_info = {
       'name' => 'main-db',
-      'connectionInfo' => { 'externalConnectionString' => 'postgres://user:pass@host/db' }
+      'connectionInfo' => { 'externalConnectionString' => @mock_database_url }
     }
     @render_client.expect :find_database_by_name, db_info, ['main-db']
 
@@ -176,7 +179,7 @@ class BackupServiceErrorPathsTest < ActiveSupport::TestCase
   test "ensure block cleans up temp files on failure" do
     db_info = {
       'name' => 'main-db',
-      'connectionInfo' => { 'externalConnectionString' => 'postgres://user:pass@host/db' }
+      'connectionInfo' => { 'externalConnectionString' => @mock_database_url }
     }
     @render_client.expect :find_database_by_name, db_info, ['main-db']
 

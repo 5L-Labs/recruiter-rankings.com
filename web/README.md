@@ -105,7 +105,7 @@ CMD ["bin/rails", "server", "-b", "0.0.0.0"]
 
 ### docker-compose.yml
 
-Create a `docker-compose.yml` for local development:
+Set `DATABASE_URL` to the full connection URL for the local `db` service, matching its user, password, and database name. Export it in your shell before running Compose. Then create a `docker-compose.yml` for local development:
 
 ```yaml
 version: '3.8'
@@ -130,7 +130,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/web_development
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the full database connection URL}
       RAILS_ENV: development
     depends_on:
       - db

@@ -1,9 +1,12 @@
 require "test_helper"
 require "minitest/mock"
 require "ostruct"
+require "securerandom"
+require "uri"
 
 class BackupServiceTest < ActiveSupport::TestCase
   setup do
+    @mock_database_url = URI::Generic.build(scheme: 'postgresql', userinfo: "fixture:#{SecureRandom.hex(16)}", host: 'db.example.invalid', path: '/fixture').to_s
     @storage = BackupStorage::LocalAdapter.new(root_path: Rails.root.join('tmp', 'test_backups'))
     @render_client = Minitest::Mock.new
     @service = BackupService.new(storage_adapter: @storage, render_client: @render_client, retention_days: 1)
@@ -18,7 +21,7 @@ class BackupServiceTest < ActiveSupport::TestCase
   test "perform executes pg_dump, encrypts, and uploads" do
     db_info = {
       'name' => 'main-db',
-      'connectionInfo' => { 'externalConnectionString' => 'postgres://user:pass@host:5432/db' }
+      'connectionInfo' => { 'externalConnectionString' => @mock_database_url }
     }
     @render_client.expect :find_database_by_name, db_info, ['main-db']
 
