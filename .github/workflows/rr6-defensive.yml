@@ -74,4 +74,16 @@ jobs:
           test "$result" -eq 42 || { echo "Scanner fixture failed or scanner unavailable (exit $result)"; exit 1; }
           echo 'Synthetic scanner fixture detected (contents withheld).'
       - name: Scan repository working tree with redaction
-        run: docker run --rm --network none -v "$GITHUB_WORKSPACE:/scan:ro" zricethezav/gitleaks:v8.28.0 detect --source=/scan --no-git --redact --exit-code=1
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 .github/scripts/test_gitleaks_exceptions.py
+          python3 .github/scripts/gitleaks_exceptions.py "$GITHUB_WORKSPACE" \
+            .github/trufflehog-exceptions.json "$RUNNER_TEMP/gitleaks-config.toml"
+          docker run --rm --network none -v "$GITHUB_WORKSPACE:/scan:ro" \
+            -v "$RUNNER_TEMP/gitleaks-config.toml:/config/gitleaks.toml:ro" \
+            zricethezav/gitleaks:v8.28.0 detect --source=/scan --no-git \
+            --config=/config/gitleaks.toml --redact --exit-code=1
+          python3 .github/scripts/gitleaks_exceptions.py "$GITHUB_WORKSPACE" \
+            .github/trufflehog-exceptions.json "$RUNNER_TEMP/gitleaks-config-after.toml"
+          cmp "$RUNNER_TEMP/gitleaks-config.toml" "$RUNNER_TEMP/gitleaks-config-after.toml"
