@@ -80,17 +80,17 @@ If the API doesn't return the External URL in time, the script pauses and asks y
 
 ## Manual restore procedure
 
-Use this if you need to restore to a specific URL without the full Render automation:
+Use this if you need to restore to a specific URL without the full Render automation. Set and export `TARGET_DB_URL` to the full target connection URL before running either command:
 
 ```bash
 # Restore latest backup to a specific DB
 docker compose run --rm \
-  -e TARGET_DB_URL="postgres://user:pass@host.render.com/dbname" \
+  -e TARGET_DB_URL="$TARGET_DB_URL" \
   backup restore
 
 # Restore a specific backup file
 docker compose run --rm \
-  -e TARGET_DB_URL="postgres://user:pass@host.render.com/dbname" \
+  -e TARGET_DB_URL="$TARGET_DB_URL" \
   backup restore backup-20260301-020012.sql.gz
 ```
 

@@ -1,0 +1,77 @@
+name: RR-6 preview defensive checks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-regressions:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: rr_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: modern_app
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/rr_test
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: modern_app/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npx tsc -p rr10-preview/tsconfig.json --noEmit
+      - run: DATABASE_URL="$TEST_DATABASE_URL" bash scripts/db-setup.sh
+      - run: npm test
+
+  dependency-advisories:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: modern_app
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - run: npm audit --audit-level=moderate
+
+  repository-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check scanner detects a harmless synthetic fixture
+        run: |
+          mkdir -p "$RUNNER_TEMP/rr6-fixture"
+          printf 'key = %s%s\n' 'AKIA' 'ZZ8M7N6B5V4C3X2Q' > "$RUNNER_TEMP/rr6-fixture/fixture.txt"
+          set +e
+          docker run --rm --network none -v "$RUNNER_TEMP/rr6-fixture:/scan:ro" zricethezav/gitleaks:v8.28.0 detect --source=/scan --no-git --redact --exit-code=42 > "$RUNNER_TEMP/rr6-fixture-output" 2>&1
+          result=$?
+          set -e
+          test "$result" -eq 42 || { echo "Scanner fixture failed or scanner unavailable (exit $result)"; exit 1; }
+          echo 'Synthetic scanner fixture detected (contents withheld).'
+      - name: Scan repository working tree with redaction
+        run: docker run --rm --network none -v "$GITHUB_WORKSPACE:/scan:ro" zricethezav/gitleaks:v8.28.0 detect --source=/scan --no-git --redact --exit-code=1
