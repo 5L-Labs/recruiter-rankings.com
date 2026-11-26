@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "exceptions": [
+    {
+      "path": "web/config/credentials.yml.enc",
+      "sha256": "6d9a83c8ab112dcf018f7bd18d486818e1c2fc0d84e5823360bd6f00e2107650",
+      "owner": "NickJLange",
+      "approver": "user_01M4X9W148S2FSA7520X6PG840",
+      "approved_at": "2026-11-26T08:46:07Z",
+      "expires_at": "2026-12-26T08:46:07Z",
+      "rationale": "Box detector matches a substring of this Rails encrypted ciphertext, not a demonstrated Box credential."
+    },
+    {
+      "path": "web/_site/config/credentials.yml.enc",
+      "sha256": "6d9a83c8ab112dcf018f7bd18d486818e1c2fc0d84e5823360bd6f00e2107650",
+      "owner": "NickJLange",
+      "approver": "user_01M4X9W148S2FSA7520X6PG840",
+      "approved_at": "2026-11-26T08:46:07Z",
+      "expires_at": "2026-12-26T08:46:07Z",
+      "rationale": "Box detector matches a substring of this Rails encrypted ciphertext, not a demonstrated Box credential."
+    }
+  ]
+}
