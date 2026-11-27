@@ -139,7 +139,7 @@ volumes:
   postgres_data:
 ```
 
-For `docker-compose.test.yml`, supply a full `DATABASE_URL` using host `db` and database `web_test`.
+`docker-compose.test.yml` uses its own fixed, passwordless URL for the local `db` service and `web_test` database, overriding any inherited `DATABASE_URL`. Its PostgreSQL service already uses trust authentication.
 
 ### Running with Docker
 
