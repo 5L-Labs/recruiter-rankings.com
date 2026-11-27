@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/web_test
+      DATABASE_URL: postgres://postgres@db:5432/web_test
       RAILS_ENV: test
     depends_on:
       - db
