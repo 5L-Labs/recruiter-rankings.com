@@ -139,6 +139,8 @@ volumes:
   postgres_data:
 ```
 
+For `docker-compose.test.yml`, supply a full `DATABASE_URL` using host `db` and database `web_test`.
+
 ### Running with Docker
 
 ```bash

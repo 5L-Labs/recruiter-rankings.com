@@ -20,7 +20,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/web_development
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the full database connection URL}
       RAILS_ENV: development
     depends_on:
       - db
